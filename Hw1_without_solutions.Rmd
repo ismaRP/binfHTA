@@ -17,7 +17,7 @@ Group: Group 3
 
 For deadlines etc, see absalon. 
 
-You have to supply both the answer (whatever it is: numbers, a table, plots or combinations thereof), as well as the R or Linux code you used to make the plots. This should be done using this R markdown template: we want both the R markdown file and a resulting PDF. For PDF output, you may have to install some extra programs - R studio will tell you. 
+You have to supply botbh the answer (whatever it is: numbers, a table, plots or combinations thereof), as well as the R or Linux code you used to make the plots. This should be done using this R markdown template: we want both the R markdown file and a resulting PDF. For PDF output, you may have to install some extra programs - R studio will tell you. 
 
 Note that:
 
@@ -73,4 +73,33 @@ In the homework directory, there is a data file 'chip_mm5.txt' from the collabor
 2: Binding site widths (end-start) are dependent on chromosome
 
 Can you prove/disprove these two hypotheses statistically?
+
+
+
+We first collect data from the Chip-chip experiment
+
+```{r, eval=TRUE}
+ 
+chip<-read_tsv("data/chip_mm5.txt") #read data
+head(chip) #show data
+
+ggplot(chip) + geom_histogram(aes(x=score)) + facet_wrap(~chr) # plot distribution of scores across each chromosome
+
+#Based on our plot we assume that the score values follows a normaldistributin.
+
+chip_clean <- filter(chip, score != "NA") # remove NA results
+
+oneway.test(score ~ as.factor(chr), data=chip) #Anova test for significance difference between score values across chromosomes
+
+#p-value is larger than 0.05, therfore we cannot reject our null hypothesis. 
+
+pairwise.t.test(chip_clean$score, g=chip_clean$chr)
+
+new_chip<-mutate(chip, site.width = end - start) #create site.width (end - start)
+head(new_chip) #new data
+ggplot(new_chip) + geom_histogram(aes(x=site.width)) + facet_wrap(~chr) # plot distribution of site width across each chromosome
+kruskal.test(site.width ~ as.factor(chr), data=new_chip) #Kruskal test for significance difference between site width across chromosomes
+
+#p-value below 0.05 threshold, therefore we can reject null hypothesis
+```
 
