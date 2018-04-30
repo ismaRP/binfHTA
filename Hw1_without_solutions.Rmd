@@ -11,9 +11,9 @@ library(tidyverse)
 ```
 
 ##Homework 1 - to be done as groups
-Names:
+Names: Jonas B H Andersen
 
-Group:
+Group: Group 3
 
 For deadlines etc, see absalon. 
 
