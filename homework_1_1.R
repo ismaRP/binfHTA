@@ -11,7 +11,7 @@ flowers_sepal <- transmute(data_flowers, length = data_flowers$Sepal.Length,
 
 flowers_exp <- bind_rows(flowers_petal, flowers_sepal)
 
-flowers_exp %>% ggplot(aes(x=length, y=width, col = species)) +  geom_jitter() + 
-  facet_wrap(~category) + theme_bw()
+flowers_exp %>% ggplot(aes(x=length, y=width, col = species)) +  geom_point() + 
+  facet_wrap(~category) + theme_bw() + geom_smooth(method = "lm")
 
 
