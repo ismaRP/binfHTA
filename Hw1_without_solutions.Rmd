@@ -11,9 +11,10 @@ library(tidyverse)
 ```
 
 ##Homework 1 - to be done as groups
-Names:
+Names: Adrian Ramon Santonja, Jonas B H Andersen,  
 
-Group:
+
+Group: 3
 
 For deadlines etc, see absalon. 
 
