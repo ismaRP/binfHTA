@@ -11,7 +11,7 @@ library(tidyverse)
 ```
 
 ##Homework 1 - to be done as groups
-Names: Adrian Ramon Santonja, Jonas B H Andersen,  
+Names: Adrian Ramon Santonja, Jonas B H Andersen, Ismael Rodriguez Palomo, Steen J. Østergaard, Luiza czerwinksa.
 
 
 Group: 3
@@ -51,6 +51,7 @@ head(babynames)
 ```
 
 a) List the top 5 female baby names starting with P, regardless of year, as a table. 
+
 
 b) Using the results from a, plot their occurrences as a function of year using a line plot.  Comment on your results. If you get strange results, explain them and/or improve the plot. 
 
