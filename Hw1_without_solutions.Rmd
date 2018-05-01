@@ -1,8 +1,8 @@
 ---
 title: "Home work 1"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -61,7 +61,7 @@ In the same dataset, is the name Arwen significantly more (or less) common in 20
 
 ##Question 3
 Produce the following plot starting from the flowers dataset. A potentially useful function that you may not have seen: bind_rows():  merges two tibbles by rows so that the joint tibble  becomes longer, not wider
-![](example.png)
+
 
 
 ##Question 4
@@ -83,23 +83,69 @@ We first collect data from the Chip-chip experiment
 chip<-read_tsv("data/chip_mm5.txt") #read data
 head(chip) #show data
 
-ggplot(chip) + geom_histogram(aes(x=score)) + facet_wrap(~chr) # plot distribution of scores across each chromosome
+```
 
-#Based on our plot we assume that the score values follows a normaldistributin.
+In order to assertain which test to utilize, we plot the score in a historgram to see whether we can observe a normal distibution of the data.
 
-chip_clean <- filter(chip, score != "NA") # remove NA results
+```{r, eval=TRUE}
+ 
+ggplot(chip) + geom_histogram(aes(x=score),binwidth = 20) + facet_wrap(~chr) + theme_bw() # plot distribution of scores across each chromosome
+
+```
+
+The 5 removed rows were NA's.
+
+We observe a normal distribution of score in each chromosome. In order to test whether there is a significant difference in binding score in the chromosomes, we utilize an one-way ANOVA test.
+H0: there is no significant difference in means of binding score for each chromosome. 
+H1: there is a significant difference in means of binding score for each chromosome. 
+
+```{r, eval=TRUE}
 
 oneway.test(score ~ as.factor(chr), data=chip) #Anova test for significance difference between score values across chromosomes
 
-#p-value is larger than 0.05, therfore we cannot reject our null hypothesis. 
+```
 
-pairwise.t.test(chip_clean$score, g=chip_clean$chr)
+
+
+We cannot reject our null hypothesis since the calculated p-value > 0.05, therefore we do not observe that there is a difference in mean binding score across chromosomes.
+
+To test the other hypothesis, we need to modify our data set to include binding site width.
+
+```{r, eval=TRUE}
 
 new_chip<-mutate(chip, site.width = end - start) #create site.width (end - start)
 head(new_chip) #new data
-ggplot(new_chip) + geom_histogram(aes(x=site.width)) + facet_wrap(~chr) # plot distribution of site width across each chromosome
+
+```
+
+We plot the binding site width in a histogram to ascertain whether the data is normally distributed
+
+```{r, eval=TRUE}
+
+ggplot(new_chip) + geom_histogram(aes(x=site.width),binwidth = 50) + facet_wrap(~chr) + theme_bw() # plot distribution of site width across each chromosome. Not a normal distribution
+
+```
+
+The binding site width is not normal distributed in the chromosomes. We utilize a Kruskal-Wallis test to test our null hypothesis.
+H0: there is no significant difference in the mean binding site width for each chromosome. 
+H1: there is a significant difference in the mean binding site width for each chromosome. 
+
+```{r}
+
 kruskal.test(site.width ~ as.factor(chr), data=new_chip) #Kruskal test for significance difference between site width across chromosomes
 
-#p-value below 0.05 threshold, therefore we can reject null hypothesis
 ```
+
+Calculated p-value < 0.05 therefore we can reject our null hypothesis. The alternative hypothesis is proven and there is a significant difference in binding site width across the chromosomes.
+
+
+
+
+
+
+
+
+
+
+
 
