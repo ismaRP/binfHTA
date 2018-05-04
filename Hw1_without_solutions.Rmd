@@ -68,7 +68,7 @@ P_names_full<-filter(babynames, name=="Patricia" | name== 'Pamela'| name== 'Phyl
 ggplot(P_names_full)+geom_line(data=P_names_full, mapping = aes(x=year, y=n, col=name))
 
 ```
-In the question we were asked to explain the reason for getting strange results. We think that we do not see any strange result because since we saw that some of the names correspond to both male and female, we have already filter by 'sex=F and thus, the 'strange lines' disapeared. 
+In the question we were asked to explain the reason for getting strange results. We think that we do not see any strange result because since we saw that some of the names correspond to both male and female, we have already filter by 'sex=F' and thus, the 'strange lines' disapeared. 
 
 
 ##Question 2
