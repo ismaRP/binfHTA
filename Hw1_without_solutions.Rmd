@@ -53,19 +53,22 @@ head(babynames)
 a) List the top 5 female baby names starting with P, regardless of year, as a table. 
 
 ```{r}
-P_names<-filter(babynames, str_detect(name, "^P"), sex=='F' )[1:5,]
-P_names
+filter(babynames, str_detect(name, "^P"), sex=='F' ) %>% 
+  group_by(name) %>% 
+  summarise(count = sum(n)) %>% 
+  arrange(desc(count)) -> tableQ1
+tableQ1[1:5,]
 ```
 
 
 b) Using the results from a, plot their occurrences as a function of year using a line plot.  Comment on your results. If you get strange results, explain them and/or improve the plot.
 
 ```{r}
-P_names_full<-filter(babynames, name=="Pearl" | name== 'Pauline'| name== 'Phoebe'| name== 'Polly'| name=='Priscilla' , sex=='F')
-
+P_names_full<-filter(babynames, name=="Patricia" | name== 'Pamela'| name== 'Phyllis'| name== 'Peggy'| name=='Paula' , sex=='F')
 ggplot(P_names_full)+geom_line(data=P_names_full, mapping = aes(x=year, y=n, col=name))
+
 ```
-In the question we were asked to explain the reason for getting strange results. We think that we do not see any strange result because since we saw that some of the names can correspond to both male and female, we have already filter by 'sex=F. 
+In the question we were asked to explain the reason for getting strange results. We think that we do not see any strange result because since we saw that some of the names correspond to both male and female, we have already filter by 'sex=F and thus, the 'strange lines' disapeared. 
 
 
 ##Question 2
