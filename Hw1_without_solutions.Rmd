@@ -11,7 +11,7 @@ library(tidyverse)
 ```
 
 ##Homework 1 - to be done as groups
-Names: Adrian Ramon Santonja, Jonas B H Andersen, Ismael Rodriguez Palomo, Steen J. Østergaard, Luiza czerwinksa.
+Names: Adrian Ramon Santonja, Jonas B H Andersen, Ismael Rodriguez Palomo, Steen J. Ã˜stergaard, Luiza Czerwinska.
 
 
 Group: 3
