@@ -11,9 +11,10 @@ library(tidyverse)
 ```
 
 ##Homework 1 - to be done as groups
-Names:
+Names: Adrian Ramon Santonja, Jonas B H Andersen, Ismael Rodriguez Palomo, Steen J. Østergaard, Luiza Czerwinska.
 
-Group:
+
+Group: 3
 
 For deadlines etc, see absalon. 
 
@@ -51,12 +52,47 @@ head(babynames)
 
 a) List the top 5 female baby names starting with P, regardless of year, as a table. 
 
-b) Using the results from a, plot their occurrences as a function of year using a line plot.  Comment on your results. If you get strange results, explain them and/or improve the plot. 
+```{r}
+filter(babynames, str_detect(name, "^P"), sex=='F' ) %>% 
+  group_by(name) %>% 
+  summarise(count = sum(n)) %>% 
+  arrange(desc(count)) -> tableQ1
+tableQ1[1:5,]
+```
+
+
+b) Using the results from a, plot their occurrences as a function of year using a line plot.  Comment on your results. If you get strange results, explain them and/or improve the plot.
+
+```{r}
+P_names_full<-filter(babynames, name=="Patricia" | name== 'Pamela'| name== 'Phyllis'| name== 'Peggy'| name=='Paula' , sex=='F')
+ggplot(P_names_full)+geom_line(data=P_names_full, mapping = aes(x=year, y=n, col=name))
+
+```
+In the question we were asked to explain the reason for getting strange results. We think that we do not see any strange result because since we saw that some of the names correspond to both male and female, we have already filter by 'sex=F' and thus, the 'strange lines' disapeared. 
 
 
 ##Question 2
 In the same dataset, is the name Arwen significantly more (or less) common in 2004 vs 1990? Is the change significant? What is the likely cause? Do not use hard-coding. 
 
+```{r}
+arwen_1990<-filter(babynames, name=='Arwen', year=='1990')$n
+arwen_2004<-filter(babynames, name=='Arwen', year=='2004')$n
+
+no_arwen_2004<-filter(babynames, name!='Arwen', year=='2004')
+n_no_arwen_2004<-sum(no_arwen_2004$n)
+
+no_arwen_1990<-filter(babynames, name!='Arwen', year=='1990')
+n_no_arwen_1990<-sum(no_arwen_1990$n)
+
+table_names<-matrix(c(arwen_1990, n_no_arwen_1990, arwen_2004, n_no_arwen_2004), nrow = 2)
+rownames(table_names)<-c('Arwen', 'No Arwen')
+colnames(table_names)<-c('1990', '2004')
+fisher.test(table_names)
+p_value_Q2<-fisher.test(table_names)$'p.value'
+```
+
+
+The name Arwen is significantly more common in 2004 vs 1990, with a p-value < 2.2e-16 . Arwen is the name of one of the characters from "The Lord of The Rings" trilogy, which last film was released in 2003. It is likely that the popularity of the name Arwen increased after this release, given the huge popularity of the trilogy. 
 
 
 ##Question 3
