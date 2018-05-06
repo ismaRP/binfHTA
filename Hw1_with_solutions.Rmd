@@ -70,7 +70,8 @@ P_names_full<-filter(babynames, name %in% tableQ1$name[1:5], sex=='F')
 ggplot(P_names_full)+geom_line(data=P_names_full, mapping = aes(x=year, y=n, col=name))
 
 ```
-In the question we were asked to explain the reason for getting strange results. We think that we do not see any strange result because since we saw that some of the names correspond to both male and female, we have already filter by 'sex=F' and thus, the 'strange lines' disapeared. 
+
+We think that we do not see any strange result because since we saw that some of the names correspond to both male and female, we have already filter by 'sex=F' and thus, the 'strange lines' disapeared. 
 
 
 ##Question 2
@@ -94,8 +95,8 @@ table_names<-matrix(c(arwen_1990, n_no_arwen_1990, arwen_2004, n_no_arwen_2004),
 rownames(table_names)<-c('Arwen', 'No Arwen')
 colnames(table_names)<-c(year1, year2)
 fisher.test(table_names)
-p_value_Q2<-fisher.test(table_names)$'p.value'
 ```
+
 We use the Fisher test, since we want to test proportions on counts: the null hypothesis is there is no relation between row and columns, i.e. there is no relation beween number of babies named Arwen and the year.
 
 With a p-value < 2.2e-16, we can reject the null hypothesis. Arwen is the name of one of the characters from "The Lord of The Rings" trilogy, which last film was released in 2003. It is likely that the popularity of the name Arwen increased after this release, given the huge popularity of the trilogy. 
@@ -151,7 +152,8 @@ In order to assertain which test to utilize, we plot the score in a historgram t
 
 ```{r, eval=TRUE}
  
-ggplot(chip) + geom_histogram(aes(x=score),binwidth = 20) + facet_wrap(~chr) + theme_bw() # plot distribution of scores across each chromosome
+ggplot(chip) + geom_histogram(aes(x=score),binwidth = 20) + facet_wrap(~chr) + theme_bw()
+# plot distribution of scores across each chromosome
 
 ```
 
@@ -163,7 +165,8 @@ H1: there is a significant difference in means of binding score for each chromos
 
 ```{r, eval=TRUE}
 
-oneway.test(score ~ as.factor(chr), data=chip) #Anova test for significance difference between score values across chromosomes
+oneway.test(score ~ as.factor(chr), data=chip)
+#Anova test for significance difference between score values across chromosomes
 
 ```
 
@@ -184,7 +187,8 @@ We plot the binding site width in a histogram to ascertain whether the data is n
 
 ```{r, eval=TRUE}
 
-ggplot(new_chip) + geom_histogram(aes(x=site.width),binwidth = 50) + facet_wrap(~chr) + theme_bw() # plot distribution of site width across each chromosome. Not a normal distribution
+ggplot(new_chip) + geom_histogram(aes(x=site.width),binwidth = 50) + facet_wrap(~chr) + theme_bw()
+# plot distribution of site width across each chromosome. Not a normal distribution
 
 ```
 
@@ -194,7 +198,8 @@ H1: there is a significant difference in the mean binding site width for each ch
 
 ```{r}
 
-kruskal.test(site.width ~ as.factor(chr), data=new_chip) #Kruskal test for significance difference between site width across chromosomes
+kruskal.test(site.width ~ as.factor(chr), data=new_chip)
+#Kruskal test for significance difference between site width across chromosomes
 
 ```
 
