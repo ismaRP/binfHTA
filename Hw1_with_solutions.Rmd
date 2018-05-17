@@ -95,6 +95,7 @@ no_arwen_1990<-filter(babynames, name!=name_filter, year==year1)
 n_no_arwen_1990<-sum(no_arwen_1990$n)
 
 table_names<-matrix(c(arwen_1990, n_no_arwen_1990, arwen_2004, n_no_arwen_2004), nrow = 2)
+table_names
 rownames(table_names)<-c('Arwen', 'No Arwen')
 colnames(table_names)<-c(year1, year2)
 chisq.test(table_names)
