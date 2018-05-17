@@ -8,37 +8,14 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-setwd("~/Dropbox2/Dropbox/TEACHING/BOHTA2018/homework1-3/hw2")
+#setwd("~/Dropbox2/Dropbox/TEACHING/BOHTA2018/homework1-3/hw2")
 # change as appropriate
 ```
 ##Home work 2 - to be done as groups
-Names:
+Names: 
 Group:
 
 For deadlines etc, see Absalon.
-
-You have to supply both the answer (numbers, a table, plots or combinations thereof) as well as the R or Linux code you used to make the plots. This should be done using this R markdown template: we want both the R markdown file and a resulting PDF. For PDF output, you may have to install some extra programs - RStudio will tell you. 
-
-Note that:
-
-1. If the R code gives different results than your results, you will get severe point reductions or even 0 points for the exercise
-
-2. Some questions may request you to use R options we have not covered explicitly in the course: this is part of the challenge
-
-3. While this is a group work, we expect that everyone in the group will have understood the group solution: similar or harder question might show up in the individual homework. So, if something is hard, it means you need to spend more time on it
-
-4. The results should be presented on a level of detail that someone else could replicate the analysis. 
-
-For statistical tests, you have to:
-
-1) Motivate the choice of test 
-
-2) State exactly what the null hypothesis is (depends on test!)
-
-3) Comment the outcome: do you reject the null hypothesis or not, and what does this mean for the actual question we wanted to answer (interpretation)?
-
-A question marked * means that is more challenging, and likely requires skills from the whole group.
-
 
 
 ###Question 1: Dicer dissected
@@ -50,18 +27,16 @@ a) What are the first five genomic nucleotides that are read by RNA polymerae II
 The first 5 genomic nucleotides seen from the UCSC-genome browser is: 
 *AAAGG*
 
-This is seen on the following screenshot with the first exon starting on the right and running to the left. The sequence CCTTT is reserve complemented and gives AAAGG.
+This is seen on the following screenshot (Fig 1.) with the first exon starting on the right and running to the left. The sequence CCTTT is reserve complemented and gives AAAGG.
 
-![](AK002007_UCSC.png)
+![UCSC screenshot, showing the five first bases of transcription of AK002007](AK002007_UCSC.png)
 
 
 b) Look at the raw mRNA sequence of AK002007, from the database it actually comes from. What are the first five nucleotides? 
 
-The first 5 nucleotides from the GenBank sequence is gaagcaa. This is seen in the screenshot below:
+The first 5 nucleotides from the GenBank sequence is gaagcaa. This is seen in the screenshot on figure 2:
 
-![](AK002007_GeneBank.png)
-
-In the above screenshot, the 7 nucleotides which are different between the UCSC browser and the GenBank entry are highlighted in blue.
+![Screenshot from the GenBank databse of AK002007. The 7 nucleotides which are different between the UCSC browser and the GenBank entry are highlighted in blue.](AK002007_GeneBank.png)
 
 c) How do you explain the discrepancy (maximum 5 lines)?
 
