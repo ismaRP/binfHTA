@@ -82,6 +82,9 @@ name_filter = 'Arwen'
 year1='1990'
 year2='2004'
 
+arwen_name<-filter(babynames, name==name_filter)
+ggplot(arwen_name)+geom_line(arwen_name, mapping = aes(x=year, y=n))+ylab('Number of times Arwen has been used')+ggtitle('Number of times Arwen has been used each year')
+
 arwen_1990<-filter(babynames, name==name_filter, year==year1)$n
 arwen_2004<-filter(babynames, name==name_filter, year==year2)$n
 
@@ -94,12 +97,14 @@ n_no_arwen_1990<-sum(no_arwen_1990$n)
 table_names<-matrix(c(arwen_1990, n_no_arwen_1990, arwen_2004, n_no_arwen_2004), nrow = 2)
 rownames(table_names)<-c('Arwen', 'No Arwen')
 colnames(table_names)<-c(year1, year2)
-fisher.test(table_names)
+chisq.test(table_names)
 ```
 
-We use the Fisher test, since we want to test proportions on counts: the null hypothesis is there is no relation between row and columns, i.e. there is no relation beween number of babies named Arwen and the year.
+We use the Chi squared test, since we want to test proportions on counts and due to the high values contingency table cells have. The null hypothesis is there is no relation between row and columns, i.e. there is no relation beween number of babies named Arwen and the year.
 
-With a p-value < 2.2e-16, we can reject the null hypothesis. Arwen is the name of one of the characters from "The Lord of The Rings" trilogy, which last film was released in 2003. It is likely that the popularity of the name Arwen increased after this release, given the huge popularity of the trilogy. 
+With a p-value < 2.2e-16, we can reject the null hypothesis. Arwen is the name of one of the characters from
+"The Lord of The Rings" trilogy, which last film was released in 2003. It is likely that the popularity of the
+name Arwen increased after this release, given the huge popularity of the trilogy.
 
 
 ##Question 3
