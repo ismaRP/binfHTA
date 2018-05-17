@@ -12,8 +12,10 @@ library(tidyverse)
 # change as appropriate
 ```
 ##Home work 2 - to be done as groups
-Names: 
-Group:
+Names: Adrian Ramon Santonja, Jonas B H Andersen, Ismael Rodriguez Palomo, Steen J. Østergaard, Luiza Czerwinska.
+
+
+Group: 3
 
 For deadlines etc, see Absalon.
 
@@ -31,17 +33,16 @@ This is seen on the following screenshot (Fig 1.) with the first exon starting o
 
 ![UCSC screenshot, showing the five first bases of transcription of AK002007](AK002007_UCSC.png)
 
-
 b) Look at the raw mRNA sequence of AK002007, from the database it actually comes from. What are the first five nucleotides? 
 
 The first 5 nucleotides from the GenBank sequence is gaagcaa. This is seen in the screenshot on figure 2:
 
-![Screenshot from the GenBank databse of AK002007. The 7 nucleotides which are different between the UCSC browser and the GenBank entry are highlighted in blue.](AK002007_GeneBank.png)
+ ![Screenshot from the GenBank databse of AK002007. The 7 nucleotides which are different between the UCSC browser and the GenBank entry are highlighted in blue.](AK002007_GeneBank.png)
 
 c) How do you explain the discrepancy (maximum 5 lines)?
 
 The discrepancy is hard to explain, but we have a couple of theories. 
-Looking at the GenBank entry we can see that the sequences are found by oligo-capping. In this method a cDNA library is constructed by removal of the 5'-Cap and insertion of a small synthetic oligo. This sequence could also show up in the sequencing and shown in the genbank, but removed when aligned to the genome
+Looking at the GenBank entry we can see that the sequences are found by oligo-capping. In this method a cDNA library is constructed by removal of the 5'-Cap and insertion of a small synthetic oligo. This sequence could also show up in the sequencing and be shown in the genbank, but removed when aligned to the genome in the UCSC browser.
 
 *Source: 1. Suzuki, Y., Yoshitomo-Nakagawa, K., Maruyama, K., Suyama, A. & Sugano, S. Construction and characterization of a full length-enriched and a 5’-end-enriched cDNA library. Gene 200, 149–156 (1997).*
 
