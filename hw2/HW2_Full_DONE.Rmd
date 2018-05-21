@@ -35,7 +35,7 @@ This is seen on the following screenshot (Fig 1.) with the first exon starting o
 
 b) Look at the raw mRNA sequence of AK002007, from the database it actually comes from. What are the first five nucleotides? 
 
-The first 5 nucleotides from the GenBank sequence is GAAGCAA. This is seen in the screenshot on figure 2:
+The first 5 nucleotides from the GenBank sequence is GAAGCAA. This is seen in the screenshot on figure 2.
 
  ![Screenshot from the GenBank databse of AK002007. The 7 nucleotides which are different between the UCSC browser and the GenBank entry are highlighted in blue.](AK002007_GeneBank.png)
 
@@ -61,7 +61,7 @@ experimental setup explanations)?
 
 We start by sorting initial bed files to be used for further analysis
 
-```{r eval=FALSE, engine=bash}
+```{r eval=FALSE, engine = 'bash'}
 
 sort -k1,1 -k2,2n  ERa_hg18.bed  > sorted_ERa_hg18.bed # Sort ERa
 sort -k1,1 -k2,2n  ERb_hg18.bed  > sorted_ERb_hg18.bed # Sort ERb
@@ -70,25 +70,29 @@ sort -k1,1 -k2,2n  ERb_hg18.bed  > sorted_ERb_hg18.bed # Sort ERb
 
 We anlyse the hg18 genome, for the fraction of nuclotides that are covered by either atleast 1 or no ERa or ERb sites at each chromosome and the wholde genome.
 
-```{r, engine=bash, eval=FALSE}
-nice bedtools genomecov -i sorted_ERa_hg18.bed -g hg18_chrom_sizes.txt -max 1 > ERa_genomecoverage.bed
-nice bedtools genomecov -i sorted_ERb_hg18.bed -g hg18_chrom_sizes.txt -max 1 > ERb_genomecoverage.bed
+```{r, engine='bash', eval=FALSE}
+nice bedtools genomecov -i sorted_ERa_hg18.bed -g hg18_chrom_sizes.txt -max 1 > 
+  ERa_genomecoverage.bed
+nice bedtools genomecov -i sorted_ERb_hg18.bed -g hg18_chrom_sizes.txt -max 1 >
+  ERb_genomecoverage.bed
 
 ```
 
 Files are transferred to R, first using FileZilla to extract files to computer to be used in R.
 
-```{r setup, include=TRUE}
+```{r, include=TRUE}
 
-library(tidyverse) #activate tidyverse package
-
-ERa_genome_coverage <- as.data.frame(read.table("ERa_genomecoverage.bed",header = FALSE, sep="\t",stringsAsFactors=FALSE, quote="")) #Read data
-colnames(ERa_genome_coverage) <- c("Chromosome","Depth_of_Coverage","Nr_of_Bases","Size_chr","Fraction_of_Coverage") #add column names
+ERa_genome_coverage <- as.data.frame(read.table("ERa_genomecoverage.bed",header = FALSE,
+                                    sep="\t",stringsAsFactors=FALSE, quote="")) #Read data
+colnames(ERa_genome_coverage) <- c("Chromosome","Depth_of_Coverage","Nr_of_Bases",
+                                   "Size_chr","Fraction_of_Coverage") #add column names
 ERa_genome_coverage
 
 
-ERb_genome_coverage <- as.data.frame(read.table("ERb_genomecoverage.bed",header = FALSE, sep="\t",stringsAsFactors=FALSE, quote="")) #Read data
-colnames(ERb_genome_coverage) <- c("Chromosome","Depth_of_Coverage","Nr_of_Bases","Size_chr","Fraction_of_Coverage") #add column names
+ERb_genome_coverage <- as.data.frame(read.table("ERb_genomecoverage.bed",header = FALSE,
+                                    sep="\t",stringsAsFactors=FALSE, quote="")) #Read data
+colnames(ERb_genome_coverage) <- c("Chromosome","Depth_of_Coverage","Nr_of_Bases",
+                                   "Size_chr","Fraction_of_Coverage") #add column names
 ERa_genome_coverage
 
 ```
@@ -100,7 +104,9 @@ We next plot the fraction of coverage for each chromosome of respectively ERa an
 
 ```{r, include=TRUE}
 
-# both tibbles are modified to include the fraction of coverage at each chromosome (even if it is 0), filter away the whole genome coverage and duplicates of chromosomes, and adding a column with the respective receptor. 
+# both tibbles are modified to include the fraction of coverage at each chromosome
+#(even if it is 0), filter away the whole genome coverage and duplicates of chromosomes,
+#and adding a column with the respective receptor. 
 
 Simple_ERa <- ERa_genome_coverage %>% mutate( Fraction_of_Coverage = 1 - Fraction_of_Coverage) %>% 
   filter(Depth_of_Coverage == "0" , str_detect(Chromosome, "chr")) %>% mutate(Receptor="ERa")
@@ -108,9 +114,12 @@ Simple_ERa <- ERa_genome_coverage %>% mutate( Fraction_of_Coverage = 1 - Fractio
 Simple_ERb <- ERb_genome_coverage %>% mutate( Fraction_of_Coverage = 1 - Fraction_of_Coverage) %>%
   filter(Depth_of_Coverage == "0" , str_detect(Chromosome, "chr")) %>% mutate(Receptor="ERb")
 
-Merged_Chromosome_Coverage <- rbind(Simple_ERa,Simple_ERb) # Merge ERa and ERb to plot both receptors coverage in same graph.
+Merged_Chromosome_Coverage <- rbind(Simple_ERa,Simple_ERb) 
+# Merge ERa and ERb to plot both receptors coverage in same graph.
 
-ggplot(Merged_Chromosome_Coverage) + geom_bar(aes(x=Chromosome, y=Fraction_of_Coverage, fill=Receptor), stat = "identity", position="dodge") # plot the fraction of coverage at each chromosome for both ERa and ERb
+ggplot(Merged_Chromosome_Coverage) + geom_bar(aes(x=Chromosome, y=Fraction_of_Coverage,
+                      fill=Receptor), stat = "identity", position="dodge") 
+# plot the fraction of coverage at each chromosome for both ERa and ERb
 
 
 ```
@@ -127,11 +136,13 @@ program.
 
 We start by counting the ERa or ERb sites that overlaps either ERb or ERa sites respectively.
 
-```{r, engine=bash, eval=FALSE}
+```{r, engine='bash', eval=FALSE}
 
-bedtools intersect -a ERa_hg18.bed -b ERb_hg18.bed -c > ERa_count.bed # each ERa site is counted for the number of ERb sites it overlaps (1 or 0)  
+bedtools intersect -a ERa_hg18.bed -b ERb_hg18.bed -c > ERa_count.bed 
+# each ERa site is counted for the number of ERb sites it overlaps (1 or 0)  
 
-bedtools intersect -a ERb_hg18.bed -b ERa_hg18.bed -c > ERb_count.bed # each ERb site is counted for the number of ERa sites it overlaps (1 or 0)  
+bedtools intersect -a ERb_hg18.bed -b ERa_hg18.bed -c > ERb_count.bed 
+# each ERb site is counted for the number of ERa sites it overlaps (1 or 0)  
 
 #seperate the sites that overlaps from those that does not
 awk '{ if ($4 == 1) { print } }' ERa_count.bed > ERa_overlap_ERb
@@ -143,12 +154,9 @@ awk '{ if ($4 == 0) { print } }' ERb_count.bed > ERb_NOT_overlap_ERa
 
 To find the number of sites that overlaps or does not overlap, we simply count the number of lines in the seperated files.
 
-```{r, engine=bash, eval=TRUE}
+```{r, engine='bash', eval=TRUE}
 #count lines in each dataset
-wc -l ERa_overlap_ERb
-wc -l ERa_NOT_overlap_ERb
-wc -l ERb_overlap_ERa
-wc -l ERb_NOT_overlap_ERa
+wc -l ERa_overlap_ERb ERa_NOT_overlap_ERb ERb_overlap_ERa ERb_NOT_overlap_ERa
 
 ```
 
@@ -156,7 +164,7 @@ We use R to make the Venn-diagrams.
 
 ```{r, include=TRUE}
 
-install.packages("VennDiagram")
+#install.packages("VennDiagram")
 library(VennDiagram) #Install package
 
 #Number of total sites for each receptor and number of overlapping sites
@@ -165,7 +173,8 @@ ERb_sites <- 345 + 140
 Overlapping_Sites <- 345
 
 #Draw Venn Diagram
-draw.pairwise.venn(area1=ERa_sites,area2 = ERb_sites,cross.area = Overlapping_Sites, category = c("ERa", "ERb"))
+draw.pairwise.venn(area1=ERa_sites,area2 = ERb_sites,cross.area = Overlapping_Sites, 
+                   category = c("ERa", "ERb"))
 
 ```
 
