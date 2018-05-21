@@ -152,7 +152,7 @@ wc -l ERb_NOT_overlap_ERa
 
 ```
 
-We use R to make the piecharts.
+We use R to make the Venn-diagrams.
 
 ```{r, include=TRUE}
 
@@ -169,7 +169,7 @@ draw.pairwise.venn(area1=ERa_sites,area2 = ERb_sites,cross.area = Overlapping_Si
 
 ```
 
-The piechart indicate that larger fraction of ERb site overlab ERa sites, compared to ERa sites overlaping ERb sites.   
+The Venn-diagram indicate that larger fraction of ERb site overlab ERa sites, compared to ERa sites overlaping ERb sites.   
 
 
 
