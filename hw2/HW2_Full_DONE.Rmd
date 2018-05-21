@@ -118,7 +118,8 @@ Merged_Chromosome_Coverage <- rbind(Simple_ERa,Simple_ERb)
 # Merge ERa and ERb to plot both receptors coverage in same graph.
 
 ggplot(Merged_Chromosome_Coverage) + geom_bar(aes(x=Chromosome, y=Fraction_of_Coverage,
-                      fill=Receptor), stat = "identity", position="dodge") 
+                      fill=Receptor), stat = "identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 90, vjust=0.5, hjust=0))
 # plot the fraction of coverage at each chromosome for both ERa and ERb
 
 
