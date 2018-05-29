@@ -46,10 +46,10 @@ As you already know how to quantify RNAseq data (see the quantification exercise
 Please use `knitr::kable()` to produce nicely formatted tables when you are asked to provide a table.
 
 ##Part1: Data analysis and clustering
-Use the supplied subset of Salmon quantifications stored in the “salmon_result_part1.zip” folder. These files contain the Salmon quantifications of 6 samples – 3 biological replicates of non-treated cells (WT) and 3 biological replicates of cells treated with a cancer promoting drug called TPA (WTTPA). Salmon was run with the `-seqBias` option.
+Use the supplied subset of Salmon quantifications stored in the ???salmon_result_part1.zip??? folder. These files contain the Salmon quantifications of 6 samples ??? 3 biological replicates of non-treated cells (WT) and 3 biological replicates of cells treated with a cancer promoting drug called TPA (WTTPA). Salmon was run with the `-seqBias` option.
 
 ###Question 1.1
-Read the “quant.sf” file from the Salmon result folder for WT1 into R with `read_tsv()`. Plot the isoform lengths versus the effective lengths as a scatter plot, add a smoothed line and a dashed line along the diagonal. Scale both axis using log10-scaling in ggplot2. Comment on the comparison og the differences between the trend line and the diagonal line with respect to what is expected. __Use max 100 words.__
+Read the ???quant.sf??? file from the Salmon result folder for WT1 into R with `read_tsv()`. Plot the isoform lengths versus the effective lengths as a scatter plot, add a smoothed line and a dashed line along the diagonal. Scale both axis using log10-scaling in ggplot2. Comment on the comparison og the differences between the trend line and the diagonal line with respect to what is expected. __Use max 100 words.__
 ```{r}
 
 ```
@@ -61,7 +61,7 @@ Analyze and comment on the strange outliers in the plot from Question 1.1. __Use
 ```
 
 ###Question 1.3
-Use IsoformSwitchAnalyzeR’s `importIsoformExpression()` to import all the data into R. Convert the abundancies imported by `importIsoformExpression()` into a log2 transformed abundance matrix (using a pseudocount of 1) where columns are samples and isoform ids are stored as rownames. Report the first 4 rows as a table and discuss the advantage of a pseudocount of 1. __Use max 100 words.__
+Use IsoformSwitchAnalyzeR???s `importIsoformExpression()` to import all the data into R. Convert the abundancies imported by `importIsoformExpression()` into a log2 transformed abundance matrix (using a pseudocount of 1) where columns are samples and isoform ids are stored as rownames. Report the first 4 rows as a table and discuss the advantage of a pseudocount of 1. __Use max 100 words.__
 ```{r}
 
 ```
@@ -79,21 +79,61 @@ Use the pheatmap package to make one visually appealing heatmap of the isoforms 
 ```
 
 ##Part2: Isoform switch analysis with IsoformSwitchAnalyzeR
-Use the supplied Salmon quantification subsets stored in the “salmon_result_part2.zip” folder (Different than the one you used in part 1!). These files contain the Salmon quantifications of 6 samples – 3 biological replicates of wildtype (WT) and 3 biological replicates of a knock out (KO) of a suspected splice factor – let us call it _factor X_ for the sake of drama. Salmon was run with the `-seqBias` option.
+Use the supplied Salmon quantification subsets stored in the ???salmon_result_part2.zip??? folder (Different than the one you used in part 1!). These files contain the Salmon quantifications of 6 samples ??? 3 biological replicates of wildtype (WT) and 3 biological replicates of a knock out (KO) of a suspected splice factor ??? let us call it _factor X_ for the sake of drama. Salmon was run with the `-seqBias` option.
 
 Please note that you need IsoformSwitchAnalyzeR version > 1.1.10. You might need to update it first.
 
 ###Question 2.1
-Use the `importIsoformExpression` and `importRdata(addAnnotatedORFs=FALSE)` functions to create a switchAnalyzeRList object from the Salmon output supplied in the “salmon_result_part2.zip” folder. Use the GTF file also included in the zip file. Report the summary statistics of the resulting switchAnalyzeRList. What does the `addAnnotatedORFs=FALSE` argument do and why do you think it is enabled here?
+Use the `importIsoformExpression` and `importRdata(addAnnotatedORFs=FALSE)` functions to create a switchAnalyzeRList object from the Salmon output supplied in the ???salmon_result_part2.zip??? folder. Use the GTF file also included in the zip file. Report the summary statistics of the resulting switchAnalyzeRList. What does the `addAnnotatedORFs=FALSE` argument do and why do you think it is enabled here?
 ```{r}
+library(IsoformSwitchAnalyzeR)
+
+packageVersion("IsoformSwitchAnalyzeR")
+
+R.Version()
+
+
+?importIsoformExpression()
+
+IsoformList1 <-  importIsoformExpression(parentDir = "./salmon_result_part2") 
+
+repCount1 <- IsoformList1$counts[,2:7]
+#colnames(repCount1) <- c('isoform_id','KO1','KO2','KO3','WT1','WT2','WT3')
+
+#rownames(repCount1)
+
+repCount1$isoform_id <- rownames(repCount1)
+
+
+?data.matrix
+#head(IsoformList1$counts,4)
+
+OurDesignMatrix <- data.frame(sampleID = c('KO1','KO2','KO3','WT1','WT2','WT3'),condition=c('KO','KO','KO','WT','WT','WT'))
+
+colnames(OurDesignMatrix) <- c('sampleID','condition')
+
+
+My.SwitchAnalyzerRList <-  importRdata(isoformCountMatrix = repCount1, addAnnotatedORFs=FALSE, isoformExonAnnoation = "./salmon_result_part2/subset.gtf",designMatrix = OurDesignMatrix)
+#?importRdata
+
+#cuffDB <- prepareCuffExample()
+
+#designMatrix <- cummeRbund::replicates(IsoformList1$counts)[,c('rep_name','sample_name')]
+
+#isoRepCount <- repCountMatrix(isoforms(cuffDB))
 
 ```
+
+
+
+
+
 
 ###Question 2.2
 Why is it essential the annotation stored in the GTF file is the exact annotation quantified with Salmon (in the context of IsoformSwitchAnalyzeR functionalities)? __Use max 100 words.__
 
 ###Question 2.3
-Load the supplied “switchList.Rdata” object into R with the `readRDS()` function. This is the result of running the whole IsoformSwitchAnalyzeR workflow on the full dataset. Make a table with the Top 10 switching genes with predicted consequences when sorting on q-values.
+Load the supplied ???switchList.Rdata??? object into R with the `readRDS()` function. This is the result of running the whole IsoformSwitchAnalyzeR workflow on the full dataset. Make a table with the Top 10 switching genes with predicted consequences when sorting on q-values.
 ```{r}
 
 ```
