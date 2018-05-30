@@ -1,8 +1,8 @@
 ---
 title: "HW3: Transcriptome Analysis"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -97,6 +97,8 @@ R.Version()
 
 IsoformList1 <-  importIsoformExpression(parentDir = "./salmon_result_part2") 
 
+head(data.frame(IsoformList1$counts))
+
 repCount1 <- IsoformList1$counts[,2:7]
 #colnames(repCount1) <- c('isoform_id','KO1','KO2','KO3','WT1','WT2','WT3')
 
@@ -114,6 +116,10 @@ colnames(OurDesignMatrix) <- c('sampleID','condition')
 
 
 My.SwitchAnalyzerRList <-  importRdata(isoformCountMatrix = repCount1, addAnnotatedORFs=FALSE, isoformExonAnnoation = "./salmon_result_part2/subset.gtf",designMatrix = OurDesignMatrix)
+
+
+head(My.SwitchAnalyzerRList$isoformFeatures,2)
+
 #?importRdata
 
 #cuffDB <- prepareCuffExample()
@@ -124,35 +130,78 @@ My.SwitchAnalyzerRList <-  importRdata(isoformCountMatrix = repCount1, addAnnota
 
 ```
 
-
-
-
+The addAnnotatedORFs will add annotated open reading frames, but since our data is not a quantification of known annotated transcripts, we can not use this option.
 
 
 ###Question 2.2
 Why is it essential the annotation stored in the GTF file is the exact annotation quantified with Salmon (in the context of IsoformSwitchAnalyzeR functionalities)? __Use max 100 words.__
 
+It is essential that the GTF file is the exact genomic annotation that was quantified with Salmon, since it otherwise won't be possible to match exactly which isoforms match the same genes.
+
+**NOT DONE**
+
+
 ###Question 2.3
 Load the supplied ???switchList.Rdata??? object into R with the `readRDS()` function. This is the result of running the whole IsoformSwitchAnalyzeR workflow on the full dataset. Make a table with the Top 10 switching genes with predicted consequences when sorting on q-values.
 ```{r}
+
+My.SwitchList <- readRDS("./hw3switchList.Rdata") 
+
+
+My.SwitchList.select <-  select(as.tibble(My.SwitchList$isoformFeatures), iso_ref, gene_ref, isoform_id, gene_id, condition_1, condition_2, gene_name, gene_q_value, gene_switch_q_value) %>% 
+group_by(gene_name) %>% 
+summarise(gene_q_value = min(gene_q_value), gene_switch_q_value = min(gene_switch_q_value)) %>% 
+arrange(gene_switch_q_value)
+
+knitr::kable(My.SwitchList.select[1:10,],digits=100, caption="2.3 \n Sorted genes of lowest gene switch q-value")
 
 ```
 
 ###Question 2.4
 Show code for how to produce switchPlot for these 10 genes and save them to your own computer. The plots should not be included in the report (only the code for how to produce it)! 
-```{r}
+```{r, eval=TRUE}
 
+gene.names <- pull(My.SwitchList.select[1:10,], gene_name)
+
+#switchPlot(switchAnalyzeRlist = My.SwitchList, gene='Tef')
+ 
+plotter <- function(name){
+  switchPlot(switchAnalyzeRlist = My.SwitchList, gene=name)
+}
+
+```
+```{r, eval=FALSE}
+
+sapply(gene.names, FUN = plotter)
 ```
 
 ###Question 2.5
 Which of the top 10 genes with switches do you think is the most important? Include/produce the switchPlot for that particular gene in the report and provide references if necessary. __Use max 100 words.__
+
 ```{r}
 
+plotter('Tef')
+
 ```
+
+We believe that the most critical gene that is affected upon KO of *factor X* is the Tef-gene.
+From the Isoform Usage plot we observe that the expression of the coding mRNA is completely diminished upon KO of *factor X*. The switch will then mean that only the noncoding isoforms of the gene is expressed. In addition we can see that the gene expression is significantly different between the two conditions. The Tef gene encodes for Thyrotroph embryonic factor, that is a transcription factor involved in embryonic development of the pituitary gland. 
+
 
 ###Question 2.6
 Plot the global enrichment of switch consequences and alternative splicing and comment on it. What are the general patterns? __Use max 100 words.__
 ```{r}
 
+extractConsequenceEnrichment(
+    My.SwitchList,
+    consequencesToAnalyze='all',
+    analysisOppositeConsequence = TRUE
+)
+
+extractSplicingEnrichment(My.SwitchList)
+
 ```
+
+From the Consequence enrichment plot, we see that by KO of *factor X* there is a significant decrease in coding transcripts. We also see a general tendency for shorter open reading frames, loss of known domains and complete open reading frame loss. *Factor X* seems to be a very important factor for correct splicing, and from the  Splicing enrichment plot, we observe that KO of *factor X* leads to a decrease in alternative 5' donor-sites and a decrease in alternative 3' acceptor-sites. Probably most importantly we see a significant increase in alternative transcription start sites. 
+
 
