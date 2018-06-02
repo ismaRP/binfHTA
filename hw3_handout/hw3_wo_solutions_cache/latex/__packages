@@ -22,3 +22,7 @@ cummeRbund
 IsoformSwitchAnalyzeR
 pheatmap
 bindrcpp
+viridisLite
+viridis
+scales
+rjson
