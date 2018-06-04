@@ -126,7 +126,7 @@ ggplot(Merged_Chromosome_Coverage) + geom_bar(aes(x=Chromosome, y=Fraction_of_Co
 ```
 
 
-A large portion of the chromosomes do not show any DNA which the estrogen receptors bind to. This is most likely due to an experimental decision to not use probes which correspond to regions in these chromosomes in the tilling array. If these probes were utilized we would have been able to observe noise. It is not possible to have a probe for each gene in the genome, and most often experiments rely on multiple random probes for each gene they wish to investigate. 
+A large portion of the chromosomes do not show any DNA which the estrogen receptors bind to, not even noise. This is most likely due to an experimental decision to not use probes which correspond to regions in these chromosomes in the tilling array. If these probes were utilized we would have been able to observe noise. It is not possible to have a probe for each gene in the genome, and most often experiments rely on multiple random probes for each gene they wish to investigate. 
 
 The graph indicate that ERa sites has a higher fraction of exons covering the chromosomes, meaning that a larger fraction of the DNA binds to ERa compared to ERb. However, since we only have one replicate for each receptor, the experiment is highly susceptible to noise. Difference in concentrations of ERa and ERb, incomplete immunoprecipitation, incomplete removal of DNA fragments or incomplete hybridization are all possible sources that would disrupt the experiment. 
 
