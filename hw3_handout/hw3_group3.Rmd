@@ -12,7 +12,7 @@ library(IsoformSwitchAnalyzeR)
 library(pheatmap)
 library(viridis)
 library(scales)
-library(rjson)
+#library(rjson)
 ```
 
 ##Homework 3 - to be done as groups
@@ -150,40 +150,34 @@ packageVersion("IsoformSwitchAnalyzeR")
 
 IsoformList1 <-  importIsoformExpression(parentDir = "./salmon_result_part2") 
 
-head(data.frame(IsoformList1$counts))
-
 repCount1 <- IsoformList1$counts[,2:7]
-#colnames(repCount1) <- c('isoform_id','KO1','KO2','KO3','WT1','WT2','WT3')
-
-#rownames(repCount1)
 
 repCount1$isoform_id <- rownames(repCount1)
 
-#head(IsoformList1$counts,4)
-
-OurDesignMatrix <- data.frame(sampleID = c('KO1','KO2','KO3','WT1','WT2','WT3'),condition=c('KO','KO','KO','WT','WT','WT'))
+OurDesignMatrix <- data.frame(sampleID = c('KO1','KO2','KO3','WT1','WT2','WT3'),
+                              condition=c('KO','KO','KO','WT','WT','WT'))
 
 colnames(OurDesignMatrix) <- c('sampleID','condition')
 
+```
+
+```{r,eval=T, results='hide'}
 
 My.SwitchAnalyzerRList <- importRdata(isoformCountMatrix = repCount1,
                                       addAnnotatedORFs = FALSE,
                                       isoformExonAnnoation = "./salmon_result_part2/subset.gtf",
                                       designMatrix = OurDesignMatrix)
+```
 
-# head(My.SwitchAnalyzerRList$isoformFeatures,2)
+
+```{r}
 summary(My.SwitchAnalyzerRList)
-#?importRdata
-
-#cuffDB <- prepareCuffExample()
-
-#designMatrix <- cummeRbund::replicates(IsoformList1$counts)[,c('rep_name','sample_name')]
-
-#isoRepCount <- repCountMatrix(isoforms(cuffDB))
 
 ```
 
 The addAnnotatedORFs will add annotated open reading frames, but since our data is not a quantification of known annotated transcripts, we can not use this option.
+
+
 
 ###Question 2.2
 Why is it essential the annotation stored in the GTF file is the exact annotation quantified with Salmon (in the context of IsoformSwitchAnalyzeR functionalities)? __Use max 100 words.__
@@ -200,16 +194,20 @@ Load the supplied switchList.Rdata object into R with the `readRDS()` function. 
 My.SwitchList <- readRDS("./hw3switchList.Rdata") 
 
 
-My.SwitchList.select <- select(as.tibble(My.SwitchList$isoformFeatures),
-                               iso_ref, gene_ref, isoform_id, gene_id,
-                               condition_1, condition_2, gene_name, gene_q_value,
-                               gene_switch_q_value) %>%
-  group_by(gene_name) %>%
-  summarise(gene_q_value = min(gene_q_value),
-            gene_switch_q_value = min(gene_switch_q_value)) %>%
-  arrange(gene_switch_q_value)
+# My.SwitchList.select <- select(as.tibble(My.SwitchList$isoformFeatures),
+#                                iso_ref, gene_ref, isoform_id, gene_id,
+#                                condition_1, condition_2, gene_name, gene_q_value,
+#                                gene_switch_q_value) %>%
+#   group_by(gene_name) %>%
+#   summarise(gene_q_value = min(gene_q_value),
+#             gene_switch_q_value = min(gene_switch_q_value)) %>%
+#   arrange(gene_switch_q_value)
 
-knitr::kable(My.SwitchList.select[1:10,],digits=100, caption="2.3 \n Sorted genes of lowest gene switch q-value")
+#attempt with extractTopSwitches
+
+TopSwitches <- extractTopSwitches(switchAnalyzeRlist = My.SwitchList)
+
+knitr::kable(TopSwitches[,c(2,3,6,8)],digits=100, caption="2.3 \n Sorted genes of lowest gene switch q-value")
 
 ```
 
@@ -217,10 +215,9 @@ knitr::kable(My.SwitchList.select[1:10,],digits=100, caption="2.3 \n Sorted gene
 Show code for how to produce switchPlot for these 10 genes and save them to your own computer. The plots should not be included in the report (only the code for how to produce it)! 
 ```{r, eval=TRUE}
 
-gene.names <- pull(My.SwitchList.select[1:10,], gene_name)
+gene.names <- pull(TopSwitches, gene_name)
 
-#switchPlot(switchAnalyzeRlist = My.SwitchList, gene='Tef')
- 
+
 plotter <- function(name){
   switchPlot(switchAnalyzeRlist = My.SwitchList, gene=name)
 }
@@ -229,8 +226,13 @@ plotter <- function(name){
 
 ```{r, eval=FALSE}
 
-sapply(gene.names, FUN = plotter)
+switchPlotTopSwitches(My.SwitchList)
+
+
+#sapply(gene.names, FUN = plotter)
+
 ```
+
 
 ###Question 2.5
 Which of the top 10 genes with switches do you think is the most important? Include/produce the switchPlot for that particular gene in the report and provide references if necessary. __Use max 100 words.__
@@ -255,6 +257,8 @@ extractConsequenceEnrichment(
     analysisOppositeConsequence = TRUE
 )
 ```
+
+
 ```{r}
 extractSplicingEnrichment(My.SwitchList)
 
