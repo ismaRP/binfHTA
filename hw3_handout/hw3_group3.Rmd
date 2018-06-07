@@ -58,7 +58,7 @@ wt1_quant = read_tsv('salmon_result_part1/WT1/quant.sf')
 wt1_quant %>% ggplot(aes(x=Length, y=EffectiveLength)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, linetype = 'dashed') +
-  geom_smooth(method='lm', fullrange=T) +
+  geom_smooth(fullrange=T) +
   scale_x_continuous(trans=log10_trans()) +
   scale_y_continuous(trans=log10_trans()) +
   xlab('Length (log10-scale)') +
@@ -105,15 +105,16 @@ knitr::kable(head(salmon_data$abundance, 4))
 knitr::kable(head(data.frame(transformed_matrix), 4))
 ```
 
-Pseudocounts are useful because they do not affect large numbers but help smooth the data when there are small values. The use of a pseudocount of 1 followed by a log2 transformation has the advantage of keeping values equal to 0 the same, because they might be meaningful, while affecting low values.
+Pseudocounts are useful because they do not affect large numbers but help smooth the data when there are small values. In this particular case, the use of a pseudocount of 1 followed by a log2 transformation has the advantage avoids the $-\infty$ that would be produced by log2(0).
 
 ###Question 1.4
 Use tidyverse to extract the 100 most variable isoforms (aka those with highest variance) from the log2-transformed expression matrix. Provide a table with top five most variable isoforms.
 ```{r}
-variances = apply(transformed_matrix, 1, var)
-transformed_matrix = cbind(transformed_matrix, variances)
 transformed_tibble = as.tibble(transformed_matrix, rownames='isoform_id')
-top_var = head(arrange(transformed_tibble, desc(variances)),100)
+transformed_tibble = transformed_tibble %>% rowwise() %>%
+  mutate(variance=var(c(WT1, WT2, WT3, WTTPA1, WTTPA2, WTTPA3)))
+top_var = head(arrange(transformed_tibble, desc(variance)),100)
+
 knitr::kable(head(top_var, 5))
 ```
 
@@ -124,18 +125,19 @@ Use the pheatmap package to make one visually appealing heatmap of the isoforms 
 ```{r}
 top_var_matrix = as.matrix(top_var[,2:7])
 rownames(top_var_matrix) = top_var$isoform_id
-pheatmap(top_var_matrix, color=magma(10), cutree_cols=2, show_rownames=T,
+pheatmap(top_var_matrix, color=magma(10), cutree_cols=2, show_rownames=F,
          scale='none', fontsize_row = 4, fontsize_col = 10)
 
 ```
 
 ```{r}
-pheatmap(top_var_matrix, color=magma(10), cutree_cols=2, show_rownames=T,
+pheatmap(top_var_matrix, color=magma(10), cutree_cols=2, show_rownames=F,
          scale='row', fontsize_row = 4, fontsize_col = 10)
 ```
 
 We can observe that the samples are not clustered as expected, WT vs WTTPA, since WT1 and WTTPA1 are switched. There is a clear difference between the two groups: WTTPA2, WTTPA3, WT1 and WT2, WT3, WTTPA1. Most of the isoforms that are present in high abundance in one group are not in the other. We think that there might have been an error while labeling WT1 and WTTPA1 so that they appear in the other cluster.
-When using 'scale='row'' the difference between the isoforms and sample clusters are visually clearer. Thanks to this normalization it is possible and safer to make comparison across rows, i.e. between different samples. 
+When using 'scale='row'' the difference between the isoforms and sample clusters are visually clearer,
+because without scaling, genes with high variance, hide the changes in genes with less variance but with a significant difference between the two conditions. When scaling, all the variances across rows are equal.
 
 ##Part2: Isoform switch analysis with IsoformSwitchAnalyzeR
 Use the supplied Salmon quantification subsets stored in the salmon_result_part2.zip folder (Different than the one you used in part 1!). These files contain the Salmon quantifications of 6 samples  3 biological replicates of wildtype (WT) and 3 biological replicates of a knock out (KO) of a suspected splice factor  let us call it _factor X_ for the sake of drama. Salmon was run with the `-seqBias` option.
