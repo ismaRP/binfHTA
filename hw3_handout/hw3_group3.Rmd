@@ -16,9 +16,10 @@ library(scales)
 ```
 
 ##Homework 3 - to be done as groups
-Names:
 
-Group:
+Names: Adrian Ramon Santonja, Jonas B H Andersen, Ismael Rodriguez Palomo, Steen J. Østergaard, Luiza Czerwinska.
+
+Group: 3
 
 For deadlines etc., see Absalon. 
 
@@ -105,7 +106,11 @@ knitr::kable(head(salmon_data$abundance, 4))
 knitr::kable(head(data.frame(transformed_matrix), 4))
 ```
 
-Pseudocounts are useful because they do not affect large numbers but help smooth the data when there are small values. In this particular case, the use of a pseudocount of 1 followed by a log2 transformation has the advantage avoids the $-\infty$ that would be produced by log2(0).
+Pseudocounts are useful because they do not affect large numbers but help smooth the data when there are small values. In this particular case, the advantage of a pseudocount 1 are:
+
+1. The use of a pseudocount of 1 followed by a log2 transformation has the advantage of avoiding the $-\infty$ that would be produced by log2(0).
+
+2. On the other hand, by using a pseudocount of 1, 0 values will remain 0 after the log2 transformation.
 
 ###Question 1.4
 Use tidyverse to extract the 100 most variable isoforms (aka those with highest variance) from the log2-transformed expression matrix. Provide a table with top five most variable isoforms.

@@ -1,0 +1,108 @@
+---
+title: "Data mining exercise"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(pheatmap)
+library(viridis)
+```
+#Introduction
+
+Your collaborator has made a  CAGE experiment using 7 different tissues. As a remainder, CAGE tags are 20-21 nt long tags mapping to the genome. We often cluster CAGE tags that are close to one another on the genome to a “tag cluster”. A tag cluster can then have several tags from one or several tissues. 
+
+One can view these CAGE tag clusters as being “core promoters” in the sense that they are measuring the activity and location of a core promoter.
+
+The data file `htbinf_cage_tpms` shows the CAGE tag clusters as rows, and tissues as columns. The cell values are the TPMs from the given tissue in the cluster.  There are three additional columns: the tag cluster ID, the location of the cluster in mm8 and the strand of the cluster. 
+The collaborator now wants to know:
+
+__1. How many types of  core promoters are there in terms of tissue expression patterns, and what expression patterns are these? __
+```{r, message=FALSE}
+cage_data = read_tsv('htbinf_cage_tpms.txt')
+cage_matrix = as.matrix(cage_data[,4:10])
+head(cage_data)
+
+dist_m = dist(cage_matrix)
+mytree = hclust(dist_m) 
+plot(mytree, labels=F)
+
+# Kmeans
+my_groups = kmeans(cage_matrix, 6)$cluster
+my_pca = prcomp(cage_matrix, scale=T, center=T)
+summary(my_pca)
+my_pcax = my_pca$x
+result = as.tibble(cbind(my_pcax, my_groups))
+result %>% ggplot(aes(x=PC1, y=PC2, color=as.factor(my_groups))) + geom_point()
+
+```
+
+
+__2. What tissues are similar to each other in terms of promoter usage? They would really like to have this as a picture and not just  "values"__
+
+```{r}
+pheatmap(cage_matrix, scale='row', color=magma(9, direction=-1), cutree_rows=6)
+```
+
+
+__3.  How many tissue-specific promoters are there, per tissue and just allover? It would be very helpful to calculate two "specificity scores": one for each tissue, and one summary score across all tissues for each promoter. __ 
+```{r}
+cage_data = cage_data %>% rowwise() %>% mutate(sum = sum(liv,emb,lun,mac,cer,som,vis))
+proc_data = cage_data %>% rowwise() %>%
+  mutate(cer_s = cer/sum,
+         emb_s = emb/sum,
+         liv_s = liv/sum,
+         lun_s = lun/sum,
+         mac_s = mac/sum,
+         som_s = som/sum,
+         vis_s = vis/sum) %>% select(-strand, -location, -sum)
+cutoff = 0.5
+gat = proc_data %>% select(-cer,-emb,-liv,-lun,-mac,-som,-vis) %>%
+  gather(key=tissue, value=score, cer_s, emb_s,liv_s,lun_s,mac_s,som_s, vis_s)
+
+ggplot(gat, aes(x=score)) + geom_histogram(binwidth = 0.005) + facet_grid(~tissue)
+
+ggplot(gat, aes(x=score)) + geom_histogram(binwidth = 0.01) +
+  xlim(0.2, 0.6) +
+  facet_grid(~tissue)
+
+specific = proc_data %>%
+  filter(cer_s>cutoff | emb_s>cutoff | liv_s>cutoff | lun_s>cutoff | mac_s>cutoff | som_s>cutoff | vis_s>cutoff)
+
+gat %>% group_by(tissue) %>% filter(score>cutoff) %>% summarise(count = n())
+
+```
+
+__4. They want to have  genome browser examples of the most tissue-specific promoter for each tissue__
+```{r}
+spec_proms = gat %>% arrange(tissue, desc(score)) %>% distinct(tissue, .keep_all = T)
+matrix(unlist(strsplit((cage_data %>%
+          filter(tc_id %in% spec_proms$tc_id) %>%
+          select(tc_id, location,strand))$location,
+         split = '[:-]')), ncol = 3, byrow=T) %>%
+  as.tibble %>%
+  mutate(tc_id=spec_proms$tc_id) %>% write_tsv('prom.bed')
+spec_proms
+
+```
+
+![Genome browser, liver tissue promoter](figure1.png)
+
+![Genome browser, cerebellum tissue promoter](figure2.png)
+
+__5 Lastly, they want a list with the 10 most tissue-specific promoters, taking all tissues into account.__
+
+```{r}
+top_prom = gat %>% arrange(desc(score)) %>% head(10)
+top_prom
+matrix(unlist(strsplit((cage_data %>%
+          filter(tc_id %in% top_prom$tc_id) %>%
+          select(tc_id, location,strand))$location,
+         split = '[:-]')), ncol = 3, byrow=T) %>%
+  as.tibble %>%
+  mutate(tc_id=top_prom$tc_id) %>% write_tsv('top_prom.bed')
+
+```
+
+
